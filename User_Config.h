@@ -2,4 +2,4 @@
 // Commenting out the line is NOT essential but will save some FLASH space if
 // SD Card access is not needed.
 
-#define USE_SD_CARD
+//#define USE_SD_CARD

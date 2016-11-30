@@ -64,7 +64,7 @@ private:
     int decodeCommon(void);
 public:
 
-    uint16_t *pImage;
+    uint32_t *pImage;
     JPEGDecoder *thisPtr;
 
     int width;

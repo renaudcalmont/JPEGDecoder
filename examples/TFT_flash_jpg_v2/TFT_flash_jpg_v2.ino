@@ -153,7 +153,7 @@ void renderJPEG(int xpos, int ypos) {
 
   //jpegInfo(); // Print information from the JPEG file (could comment this line out)
 
-  uint16_t *pImg;
+  uint32_t *pImg;
   uint16_t mcu_w = JpegDec.MCUWidth;    // Width of MCU
   uint16_t mcu_h = JpegDec.MCUHeight;   // Height of MCU
   uint32_t mcu_pixels = mcu_w * mcu_h;  // Total number of pixels in an MCU

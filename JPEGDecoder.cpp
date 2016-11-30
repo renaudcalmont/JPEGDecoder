@@ -90,7 +90,7 @@ int JPEGDecoder::decode_mcu(void){
 int JPEGDecoder::read(void)
 {
     int y, x;
-    uint16_t *pDst_row;
+    uint32_t *pDst_row;
     
     if(is_available == 0) return 0;
 
@@ -111,13 +111,13 @@ int JPEGDecoder::read(void)
 
         for (x = 0; x < image_info.m_MCUWidth; x += 8)
         {
-            uint16_t *pDst_block = pDst_row + x;
+            uint32_t *pDst_block = pDst_row + x;
 
             // Compute source byte offset of the block in the decoder's MCU buffer.
             uint src_ofs = (x * 8U) + (y * 16U);
-            const uint8 *pSrcR = image_info.m_pMCUBufR + src_ofs;
-            const uint8 *pSrcG = image_info.m_pMCUBufG + src_ofs;
-            const uint8 *pSrcB = image_info.m_pMCUBufB + src_ofs;
+            const uint8_t *pSrcR = image_info.m_pMCUBufR + src_ofs;
+            const uint8_t *pSrcG = image_info.m_pMCUBufG + src_ofs;
+            const uint8_t *pSrcB = image_info.m_pMCUBufB + src_ofs;
 
             const int bx_limit = min(8, image_info.m_width - (mcu_x * image_info.m_MCUWidth + x));
 
@@ -126,10 +126,10 @@ int JPEGDecoder::read(void)
                 int bx, by;
                 for (by = 0; by < by_limit; by++)
                 {
-                    uint16_t *pDst = pDst_block;
+                    uint32_t *pDst = pDst_block;
 
                     for (bx = 0; bx < bx_limit; bx++)
-                        *pDst++ = *pSrcR >> 3 | (*pSrcR & 0xFC) <<3 | (*pSrcR & 0xF6) << 8;
+                        *pDst++ = ((*pSrcR & 0xFFFFFF) << 16) | ((*pSrcR & 0xFFFF) << 8) | ((*pSrcR & 0xFF) << 0);
 
                     pSrcR += (8 - bx_limit);
 
@@ -141,11 +141,11 @@ int JPEGDecoder::read(void)
                 int bx, by;
                 for (by = 0; by < by_limit; by++)
                 {
-                    uint16_t *pDst = pDst_block;
+                    uint32_t *pDst = pDst_block;
 
                     for (bx = 0; bx < bx_limit; bx++)
                     {
-                        *pDst++ = *pSrcB >> 3 | (*pSrcG & 0xFC) <<3 | (*pSrcR & 0xF8) << 8;
+                        *pDst++ = ((*pSrcR & 0xFFFFFF) << 16) | ((*pSrcG & 0xFFFF) << 8) | ((*pSrcB & 0xFF) << 0);
                         pSrcR++; pSrcG++; pSrcB++;
                     }
 
@@ -253,7 +253,7 @@ int JPEGDecoder::decodeCommon(void) {
     decoded_height =  image_info.m_height;
 
     row_pitch = image_info.m_MCUWidth;
-    pImage = new uint16_t[image_info.m_MCUWidth * image_info.m_MCUHeight];
+    pImage = new uint32_t[image_info.m_MCUWidth * image_info.m_MCUHeight];
     if (!pImage)
     {
         #ifdef DEBUG
